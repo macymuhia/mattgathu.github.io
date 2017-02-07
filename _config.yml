@@ -1,16 +1,20 @@
 # Site settings
-title: Lorem Ipsum - Web Developer
-description: "A blog about lorem ipsum ..."
-baseurl: "/space-jekyll-template" # for test: remove string '/space-jekyll-templa' to ''
-url: "http://victorvoid.github.io" # for test: remove string 'http://victorvoid.github.io' to '' but in production: 'https://yourusername.githu.io'
+title: Matt Gathu
+description: "Matt Gathu's blog"
+baseurl: "" # for test: remove string '/space-jekyll-templa' to ''
+url: "https://mattgathu.github.io"
 # User settings
-username: lorem ipsum
-user_title: Lorem Ipsum - FrontEnd
-email: lorem.lorem@ipsum.com
-twitter_username: loremipsum
-github_username:  loremipsum
-gplus_username:  loremipsum
-disqus_username: loremipsum
+username: Simple Coder
+user_title: Matt Gathu
+email: mattgathu@gmail.com
+twitter_username: swissgathu
+github_username:  mattgathu
+gplus_username:  mattgathu
+disqus_username: mattgathu
+linkedin: https://www.linkedin.com/in/matt-gathu-b179b13b
+hackerrank: https://www.hackerrank.com/mattgathu
+ga_account: UA-51870208-1
+ga_domain: mattgathu.me
 
 # Build settings
 markdown: kramdown
@@ -38,12 +42,12 @@ links:
   - title: about me
     url: /about
 # projects in header index
-projects:
-  - name: asciilang
-    url: https://github.com/victorvoid/asciilang
-  - name: vim-frontend
-    url: https://github.com/victorvoid/vim-frontend
-  - name: generator-capybara
-    url: https://github.com/victorvoid/generator-capybara 
+# projects:
+#   - name: asciilang
+#     url: https://github.com/victorvoid/asciilang
+#   - name: vim-frontend
+#     url: https://github.com/victorvoid/vim-frontend
+#   - name: generator-capybara
+#     url: https://github.com/victorvoid/generator-capybara
 # exclude my node related stuff
 exclude: ['package.json', 'src', 'node_modules']

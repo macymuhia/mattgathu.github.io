@@ -2,7 +2,7 @@
     <div class="content">
 
         <div class="person">
-            <img alt="My photo" src="https://s-media-cache-ak0.pinimg.com/564x/9d/4d/31/9d4d314ec7722d05541111a180e4e54b.jpg" alt="">
+            <img alt="My photo" src="/assets/img/profile.jpeg" alt="">
         </div>
 
         <h1>
@@ -33,9 +33,9 @@
 
         <ul class="recent">
             <p>Recent posts:</p>
-             {% for post in site.posts limit:3%}
+             {% for post in site.posts limit:5%}
                 <li>
-                    <a title="Will take a my recent post" href="{{ post.url | prepend: site.baseurl }}">
+                    <a title="{{ post.title }}"" href="{{ post.url | prepend: site.baseurl }}">
                         <h2 class="post-title" itemprop="name">{{ post.title }}</h2>
                     </a>
                 </li>
