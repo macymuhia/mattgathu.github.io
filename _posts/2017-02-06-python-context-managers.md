@@ -65,8 +65,8 @@ The translation of the *with* statement syntax is:
 
 ```python
 mgr = (EXPR)
-exit = type(mgr).__exit__  # Not calling it yet
-value = type(mgr).__enter__(mgr)
+exit = type(mgr).__exit__
+value = type(mgr).__enter__(mgr) # entry method invoked
 exc = True
 try:
     try:
@@ -81,7 +81,7 @@ try:
 finally:
     # The normal and non-local-goto cases are handled here
     if exc:
-        exit(mgr, None, None, None)
+        exit(mgr, None, None, None) # exit method invoked
 ```
 
 Example of a context manager would look like this:
@@ -127,8 +127,6 @@ class GeneratorContextManager(object):
             except StopIteration:
                 return True
             except:
-                # only re-raise if it's not the exception that was passed to throw(), because
-                # __exit__() must not raise an exception unless it failed itself.
                 if sys.exc_info()[1] is not value:
                     raise
 
@@ -143,15 +141,15 @@ This decorator could be used as follows:
 ```python
 @contextmanager
 def openfile(fname):
-    f = open(fname) # IOError is untouched by GeneratorContext
+    f = open(fname)
     try:
         yield f
     finally:
         f.close()
 ```
 
-A robust implementation of this decorator is available as part of the `contextlib` module of the
-standard library.
+A robust implementation of this decorator is available as part of the [contextlib](https://docs.python.org/3/library/contextlib.html)
+module of the standard library which provides utilities for common tasks involving the `with` statement.
 
 Some types in the standard library can be identified as context managers, that is, they are already
 endowed with the `__enter__()` and `__exit__()` methods. They include:
@@ -163,10 +161,15 @@ endowed with the `__enter__()` and `__exit__()` methods. They include:
 - threading.Condition
 - threading.Semaphore
 
-This hence makes the Pythonic way of working with files to be:
+Thus the Pythonic way of working with files is usually:
 
 ```python
 with open('filename') as myfile:
     do_something(myfile)
 ```
 This ensures the file is closed after the `do_something` block is exited.
+
+
+## Recap
+
+Python context managers are meant to make resource management painless, they are used in conjunction with the builtin `with` statement. There were as a result of several Python Enhancement Proposals (PEPs) and there is a `contextlib` module in the standard library that provides utilities for common context management tasks.
