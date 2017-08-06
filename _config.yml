@@ -42,11 +42,11 @@ links:
   - title: about me
     url: /about
 # projects in header index
-# projects:
-#   - name: asciilang
-#     url: https://github.com/victorvoid/asciilang
-#   - name: vim-frontend
-#     url: https://github.com/victorvoid/vim-frontend
+projects:
+  - name: cute - Macro for Python-esque comprehensions in Rust
+    url: https://github.com/mattgathu/cute
+  - name: slugify - A Rust crate for flexible slug generation
+    url: https://github.com/mattgathu/slugify
 #   - name: generator-capybara
 #     url: https://github.com/victorvoid/generator-capybara
 # exclude my node related stuff
