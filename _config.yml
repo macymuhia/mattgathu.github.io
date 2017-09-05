@@ -43,6 +43,8 @@ links:
     url: /about
 # projects in header index
 projects:
+  - name: rget - A wget clone written in Rust
+    url: https://github.com/mattgathu/rget
   - name: cute - Macro for Python-esque comprehensions in Rust
     url: https://github.com/mattgathu/cute
   - name: slugify - A Rust crate for flexible slug generation
