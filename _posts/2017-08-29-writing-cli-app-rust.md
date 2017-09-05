@@ -275,4 +275,4 @@ Writing CLI tools in Rust is quite easy. Argument parsing can be done using the 
 progress bars generated using the `indicatif` crate and colored output using the `console` crate.
 The `cargo` build tool also makes it a breeze to build and run our code.
 
-You can find the full implementation of the `wget` clone on [github repo](https://github.com/mattgathu/rget).
+You can find the full implementation of the `wget` clone my [github](https://github.com/mattgathu/rget).
