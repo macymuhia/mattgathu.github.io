@@ -20,7 +20,7 @@ write fast, safe and concurrent code. It fits in the same niche as C and C++ but
 breath of features and convenience that makes writing programs in it fun.
 
 [Command Line Tools](https://en.wikipedia.org/wiki/Command-line_interface) are programs designed to
-be executed in a terminal (command line) interface. The are synonymous with Unix programming where
+be executed in a terminal (command line) interface. They are synonymous with Unix programming where
 they are often called shell tools. An example is the `ls` command used to list directories.
 
 
