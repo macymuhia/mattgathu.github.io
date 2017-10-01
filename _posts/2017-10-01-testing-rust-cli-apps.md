@@ -16,20 +16,6 @@ keywords: rust, cli, command line tools, programming, testing, assert_cli
 Recently I wrote a post on [how to write a CLI application using Rust](http://mattgathu.github.io/writing-cli-app-rust/). This is a follow up post
 exploring how to test CLI applications and integrating tests with Cargo, Rust's build tool.
 
-## tl;dr
-
-Testing is an important component of Software development. Rust provides support for writing both
-unit tests and integration tests and Cargo automatically runs tests for us.
-
-Integration tests are more complex to write compared to unit tests, moreso for CLI applications
-that require the emulation of a terminal environment.
-
-Rust provides [std::process::Command](https://doc.rust-lang.org/std/process/struct.Command.html) that makes it easy to call an executable and be able to monitor
-it's environment, input, output and status.
-
-The [assert_cli](https://github.com/killercup/assert_cli) crate makes it easy to write integration tests by abstracting rust internals and
-providing a testing oriented interface that makes it simple to read and reason about our tests.
-
 ## What
 
 Cargo has builtin support for running both unit and integration tests. It also generates 
