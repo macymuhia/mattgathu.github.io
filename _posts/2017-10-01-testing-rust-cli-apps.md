@@ -214,7 +214,7 @@ unit tests and integration tests and Cargo automatically runs tests for us.
 Integration tests are more complex to write compared to unit tests, moreso for CLI applications
 that require the emulation of a terminal environment.
 
-Rust provides [std::process::Command](https://doc.rust-lang.org/std/process/struct.Command.html) that makes it to call an executable and be able to monitor
+Rust provides [std::process::Command](https://doc.rust-lang.org/std/process/struct.Command.html) that makes it simple to call an executable and be able to monitor
 it's environment, input, output and status.
 
 The [assert_cli](https://github.com/killercup/assert_cli) crate makes it easy to write integration tests by abstracting rust internals and
