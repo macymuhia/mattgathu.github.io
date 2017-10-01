@@ -96,7 +96,7 @@ achieve this by calling our executable via the [std::process::Command](https://d
 interface.
 
 This allows us to gain access to our executable's:
-* environment variable maping
+* environment variable mapping
 * stdin
 * stdout
 * stderr
