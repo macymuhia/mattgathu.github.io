@@ -46,7 +46,7 @@ pub struct TraitObject {
     pub vtable: *mut (), // vtable pointer
 }
 ```
-The data pointer addresses the data that the trait object is storing, while the vtable pointer
+The **data pointer** addresses the data that the trait object is storing, while the **vtable pointer**
 points to the virtual method table corresponding to the trait implementation.
 
 ## Jan-16-2018
@@ -61,7 +61,7 @@ There are two ways of opting into unsafe behavior: with an `unsafe` block or wit
 function
 
 ```rust
-// calling some C functions imported via FFI:
+// calling some C functions imported via FFI
 unsafe fn foo() {
     some_c_function();
 }
