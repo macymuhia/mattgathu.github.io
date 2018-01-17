@@ -21,6 +21,8 @@ markdown: kramdown
 highlighter: rouge
 permalink: /:title/
 
+# show future posts
+future: true
 
 # html minify
 compress_html:
