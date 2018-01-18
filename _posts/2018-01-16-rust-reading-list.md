@@ -212,7 +212,7 @@ fn main() {
 }
 ```
 
-Check out **`std::collections`** and **`std::iter`**
+Check out [**`std::collections`**][9] and [**`std::iter`**][10]
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -222,3 +222,5 @@ Check out **`std::collections`** and **`std::iter`**
 [6]: https://github.com/tokio-rs/tokio-core
 [7]: https://hoverbear.org/2015/05/02/a-journey-into-iterators/
 [8]: https://doc.rust-lang.org/core/iter/index.html#traits
+[9]: https://doc.rust-lang.org/beta/std/collections/
+[10]: https://doc.rust-lang.org/beta/std/iter/
