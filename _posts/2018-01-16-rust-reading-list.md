@@ -13,6 +13,7 @@ keywords: rust, posts, journal, 2018
 1. [Jan-15-2018 - Peeking inside Trait Objects](#jan-15-2018)
 2. [Jan-16-2018 - What does Rust's "Unsafe" mean?](#jan-16-2018)
 3. [Jan-17-2018 - What's Tokio and Async IO All About?](#jan-17-2018)
+4. [Jan-18-2018 - A Journey into Interators](#jan-18-2018)
 
 ## Jan-15-2018
 
@@ -153,9 +154,71 @@ fn foo(...) -> Result<ReturnType, ErrorType> {
     // ....
 ```
 
+## Jan-18-2018
+
+**Title:** [A Journey into Iterators][7]
+
+Rust supports iterators. They are a fast, safe, lazy way of working with data structures, streams,
+and other more creative applications.
+
+A Rust iterator implements the [`Iterator`][8] trait. There are also traits from conversion from
+and into iterators.
+
+Example
+```rust
+fn main() {
+    let input = [1, 2, 3]; // define a set of values
+    let iterator = input.iter(); // create an iterator over the them.
+    let mapped = iterator.map(|&x| x * 2); // map iterator to a closure
+    let output = mapped.collect::<Vec<usize>>(); // convert iterator into a collection
+    println!("{:?}", output);
+}
+```
+Iterators provide convenient methods such as `.next()` for single element iteration, `.take(n)` for
+a batch pick and `.skip(n)` for discarding `n` elements.
+
+Many of Rust's collection data structures support iterators e.g. Vectors, VecDeques, HashMaps.
+
+Writing an iterator simply means implementing the `Iterator` trait.
+
+```rust
+struct CountUp {
+    current: usize,
+}
+
+impl Iterator for CountUp {
+    type Item = usize;
+    // The only fn we need to provide for a basic iterator.
+    fn next(&mut self) -> Option<usize> {
+        self.current += 1;
+        Some(self.current)
+    }
+}
+```
+
+Rust's ranges also implement the `Iterator` traits.
+
+Iterators can be merged, chained, even split into other iterators. They can also be `filter`ed and
+`fold`ed.
+
+```rust
+fn main() {
+	let input = 1..10;
+	let output = input
+    	.filter(|&item| item % 2 == 0) // Keep Evens
+    	.map(|item| item * 2) // Multiply by two.
+    	.fold(0, |accumulator, item| accumulator + item);
+	println!("{}", output);
+}
+```
+
+Check out **`std::collections`** and **`std::iter`**
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
 [4]: https://manishearth.github.io/blog/2018/01/10/whats-tokio-and-async-io-all-about/
 [5]: https://github.com/carllerche/mio
 [6]: https://github.com/tokio-rs/tokio-core
+[7]: https://hoverbear.org/2015/05/02/a-journey-into-iterators/
+[8]: https://doc.rust-lang.org/core/iter/index.html#traits
