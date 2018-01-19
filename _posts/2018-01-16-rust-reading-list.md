@@ -13,7 +13,8 @@ keywords: rust, posts, journal, 2018
 1. [Jan-15-2018 - Peeking inside Trait Objects](#jan-15-2018)
 2. [Jan-16-2018 - What does Rust's "Unsafe" mean?](#jan-16-2018)
 3. [Jan-17-2018 - What's Tokio and Async IO All About?](#jan-17-2018)
-4. [Jan-18-2018 - A Journey into Interators](#jan-18-2018)
+4. [Jan-18-2018 - A Journey into Iterators](#jan-18-2018)
+5. [Jan-19-2018 - Error Handling in Rust](#jan-19-2018)
 
 ## Jan-15-2018
 
@@ -214,6 +215,89 @@ fn main() {
 
 Check out [**`std::collections`**][9] and [**`std::iter`**][10]
 
+
+## Jan-19-2018
+
+**Title:** [Error Handling in Rust][11]
+
+Error handling is divided into two broad categories: exceptions and return values. Error handling
+in Rust is implemented via return values.
+
+To `unwrap` something is to say, "Gimme the result, else just panic and stop execution". The
+`Option` and `Result` types implement the `unwrap` method.
+
+The `Option` type is a way to use Rust's type system to express the **possibility of absence**.
+```rust
+enum Option<T> {
+    None,
+    Some(T),
+}
+```
+Case analysis (through [pattern matching][12]) is used to get the value stored inside an
+`Option<T>`. The `unwrap` method abstracts away the case analysis.
+
+The `Option` trait defines combinators that are useful in get rid of case analysis. A great example
+is `map` that maps a closure to the value inside of an `Option<T>`
+
+```rust
+let maybe_some_string = Some(String::from("Hello, World!"));
+let maybe_some_len = maybe_some_string.map(|s| s.len());
+assert_eq!(maybe_some_len, Some(13));
+```
+The `unwrap_or` combinator is useful for providing a default value when an `Option` value is
+`None`. 
+
+```rust
+pub fn unwrap_or(self, def: T) -> T {
+        match self {
+            Some(x) => x,
+            None => def,
+        }
+}
+```
+The `and_then` combinator makes is to compose distinct computations, essentially by chaining.
+```rust
+fn square(x: u32) -> Option<u32> { Some(x * x) }
+assert_eq!(Some(2).and_then(square).and_then(square), Some(16));
+```
+
+The `Result` type is a richer version of `Option`. It expresses the **possibility of error**.
+```rust
+enum Result<T, E> {
+   Ok(T),
+   Err(E),
+}
+```
+Just like `Option`, `Result` implements lots of combinators including `map`, `map_err`, `unwrap_or`
+and `and_then`. The `Result` type also supports aliases when dealing with many references to one
+`Result`. A common alias is `io::Result`.
+```rust
+pub type Result<T> = result::Result<T, Error>;
+```
+
+Multiple errors can be handled by having a custom `enum` to represent **one of many
+possibilities**.
+```rust
+#[derive(Debug)]
+enum CliError {
+    Io(io::Error),
+    Parse(num::ParseIntError),
+}
+```
+The standard library defines two traits for error handing: `std::error::Error` and
+`std::convert::From`. The first one for describing errors and the latter for conversion.
+```rust
+impl From<io::Error> for CliError {
+    fn from(err: io::Error) -> CliError {
+        CliError::Io(err)
+    }
+}
+```
+
+The [`try!`][13] macro is useful for encapsulating case analysis, control flow and error type
+conversion.
+
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -224,3 +308,6 @@ Check out [**`std::collections`**][9] and [**`std::iter`**][10]
 [8]: https://doc.rust-lang.org/core/iter/index.html#traits
 [9]: https://doc.rust-lang.org/beta/std/collections/
 [10]: https://doc.rust-lang.org/beta/std/iter/
+[11]: http://blog.burntsushi.net/rust-error-handling/
+[12]: https://doc.rust-lang.org/book/second-edition/ch18-03-pattern-syntax.html
+[13]: https://doc.rust-lang.org/std/macro.try.html
