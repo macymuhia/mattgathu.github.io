@@ -15,6 +15,7 @@ keywords: rust, posts, journal, 2018
 3. [Jan-17-2018 - What's Tokio and Async IO All About?](#jan-17-2018)
 4. [Jan-18-2018 - A Journey into Iterators](#jan-18-2018)
 5. [Jan-19-2018 - Error Handling in Rust](#jan-19-2018)
+6. [Jan-20-2018 - Pretty State Machine Patterns in Rust](#jan-20-2018)
 
 ## Jan-15-2018
 
@@ -297,6 +298,144 @@ impl From<io::Error> for CliError {
 The [`try!`][13] macro is useful for encapsulating case analysis, control flow and error type
 conversion.
 
+## Jan-20-2018
+
+**Title:** [Pretty State Machine Patterns in Rust][14]
+
+A State Machine is any **machine** which has a set of **states** and **transitions** defined between them.
+When we talk about a machine we’re referring to the abstract concept of something which does something.
+
+States are a way to reason about where a machine is in its process. For example, we can think about a 
+bottle filling machine. The machine is in a **waiting** state when it is waiting for a 
+new bottle. Once it detects a bottle it moves to the **filling** state. Upon detecting the bottle is 
+filled it enters the **done** state. After the bottle has left the machine we return to the **waiting** state.
+
+```
+  +---------+   +---------+   +------+
+  |         |   |         |   |      |
+  | Waiting +-->+ Filling +-->+ Done |
+  |         |   |         |   |      |
+  +----+----+   +---------+   +--+---+
+       ^                         |
+       +-------------------------+
+```
+When designing a state machine in Rust, we ideally want these characteristics:
+
+* Can only be in one state at a time.
+* Each state should able have its own associated values if required.
+* Transitioning between states should have well defined semantics.
+* It should be possible to have some level of shared state.
+* Only explicitly defined transitions should be permitted.
+* Changing from one state to another should consume the state so it can no longer be used.
+* We shouldn’t need to allocate memory for all states. 
+* Any error messages should be easy to understand.
+* We shouldn’t need to resort to heap allocations to do this. 
+* The type system should be harnessed to our greatest ability.
+* As many errors as possible should be at compile-time.
+ 
+An approach to achieve is use a combination of generics, `enum`s and shared values.
+
+```rust
+fn main() {
+    let mut the_factory = Factory::new();
+    the_factory.bottle_filling_machine = the_factory.bottle_filling_machine.step();
+}
+
+// This is our state machine for our Bottle Filling Machine
+struct BFM<S> {
+    shared_value: usize,
+    state: S
+}
+
+// The following states can be the 'S' in StateMachine<S>
+struct Waiting {
+    waiting_time: std::time::Duration,
+}
+
+struct Filling {
+    rate: usize,
+}
+
+struct Done;
+
+// Our Machine starts in the 'Waiting' state.
+impl BFM<Waiting> {
+    fn new(shared_value: usize) -> Self {
+        BFM {
+            shared_value: shared_value,
+            state: Waiting {
+                waiting_time: std::time::Duration::new(0, 0),
+            }
+        }
+    }
+}
+
+// The following are the defined transitions between states.
+impl From<BFM<Waiting>> for BFM<Filling> {
+    fn from(val: BFM<Waiting>) -> BFM<Filling> {
+        BFM {
+            shared_value: val.shared_value,
+            state: Filling {
+                rate: 1,
+            }
+        }
+    }
+}
+
+impl From<BFM<Filling>> for BFM<Done> {
+    fn from(val: BFM<Filling>) -> BFM<Done> {
+        BFM {
+            shared_value: val.shared_value,
+            state: Done,
+        }
+    }
+}
+
+impl From<BFM<Done>> for BFM<Waiting> {
+    fn from(val: BFM<Done>) -> BFM<Waiting> {
+        BFM {
+            shared_value: val.shared_value,
+            state: Waiting {
+                waiting_time: std::time::Duration::new(0, 0),
+            }
+        }
+    }
+}
+
+
+// Here is we're building an enum so we can contain this state machine in a parent.
+enum MachineWrapper {
+    Waiting(BFM<Waiting>),
+    Filling(BFM<Filling>),
+    Done(BFM<Done>),
+}
+
+// Defining a function which shifts the state along.
+impl MachineWrapper {
+    fn step(mut self) -> Self {
+        self = match self {
+            MachineWrapper::Waiting(val) => MachineWrapper::Filling(val.into()),
+            MachineWrapper::Filling(val) => MachineWrapper::Done(val.into()),
+            MachineWrapper::Done(val) => MachineWrapper::Waiting(val.into()),
+        };
+        self
+    }
+}
+
+// The structure with a parent.
+struct Factory {
+    bottle_filling_machine: MachineWrapper,
+}
+
+impl Factory {
+    fn new() -> Self {
+        Factory {
+            bottle_filling_machine: MachineWrapper::Waiting(BFM::new(0)),
+        }
+    }
+}
+```
+
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -311,3 +450,4 @@ conversion.
 [11]: http://blog.burntsushi.net/rust-error-handling/
 [12]: https://doc.rust-lang.org/book/second-edition/ch18-03-pattern-syntax.html
 [13]: https://doc.rust-lang.org/std/macro.try.html
+[14]: https://hoverbear.org/2016/10/12/rust-state-machine-pattern/
