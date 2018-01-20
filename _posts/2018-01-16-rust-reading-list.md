@@ -327,9 +327,9 @@ When designing a state machine in Rust, we ideally want these characteristics:
 * It should be possible to have some level of shared state.
 * Only explicitly defined transitions should be permitted.
 * Changing from one state to another should consume the state so it can no longer be used.
-* We shouldn’t need to allocate memory for all states. 
+* We shouldn't need to allocate memory for all states. 
 * Any error messages should be easy to understand.
-* We shouldn’t need to resort to heap allocations to do this. 
+* We shouldn't need to resort to heap allocations to do this. 
 * The type system should be harnessed to our greatest ability.
 * As many errors as possible should be at compile-time.
  
