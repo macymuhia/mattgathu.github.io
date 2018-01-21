@@ -16,6 +16,7 @@ keywords: rust, posts, journal, 2018
 4. [Jan-18-2018 - A Journey into Iterators](#jan-18-2018)
 5. [Jan-19-2018 - Error Handling in Rust](#jan-19-2018)
 6. [Jan-20-2018 - Pretty State Machine Patterns in Rust](#jan-20-2018)
+7. [Jan-21-2018 - Finding Closure in Rust](#jan-21-2018)
 
 ## Jan-15-2018
 
@@ -436,6 +437,74 @@ impl Factory {
 }
 ```
 
+## Jan-21-2018
+
+**Title:** [Finding Closure in Rust][15]
+
+A **closure** is a function that can directly use variables from the scope in which it is defined.
+This is often described as the closure _closing over_ or _capturing_ variables.
+
+Rust has C++11 inspired closures using the trait system, allowing for:
+- allocation-less statically dispatched closures
+- choice to opt-in to type-erasure and dynamic dispatch
+
+Syntactically, a closure in Rust is an anonymous function value defined similar to Ruby, with
+pipes. 
+```rust
+fn main() {
+    let mut v = [5, 4, 1, 3, 2];
+    v.sort_by(|a, b| a.cmp(b)); // closure `|arguments...| body`
+    assert!(v == [1, 2, 3, 4, 5]);
+}
+```
+How do closures work? The definition of `Option::map` (an example closure implementation) is:
+```rust
+impl<X> Option<X> {
+    pub fn map<Y, F: FnOnce(X) -> Y>(self, f: F) -> Option<Y> {
+        match self {
+            Some(x) => Some(f(x)),
+            None => None
+        }
+    }
+}
+```
+
+The `FnOnce` trait and its close cousins `Fn` and `FnMut` represent how the variables are captured by the
+closure:
+
+* `Fn`: **by reference**
+* `FnMut`: **by mutable reference**
+* `FnOnce`: **by value**
+ 
+ By default, the compiler looks at the closure body to see how captured variables are used, and uses 
+ that to infers how variables should be captured, that is deciding between `Fn`, `FnMut` and
+ `FnOnce`.
+
+ The `move` keyword is used to define an **escaping** closure, one that might leave the stack frame
+ where it is created.
+```rust
+use std::thread;
+thread::spawn(move || {
+    // some work here
+    });
+```
+
+The use of traits for closures allows one to opt-in into dynamic dispatch via trait objects:
+```rust
+let mut closures: Vec<Box<Fn()>> = vec![];
+
+let text = "second";
+
+closures.push(Box::new(|| println!("first")));
+closures.push(Box::new(|| println!("{}", text)));
+closures.push(Box::new(|| println!("third")));
+
+for f in &closures {
+    f(); // first / second / third
+}
+```
+
+
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -451,3 +520,4 @@ impl Factory {
 [12]: https://doc.rust-lang.org/book/second-edition/ch18-03-pattern-syntax.html
 [13]: https://doc.rust-lang.org/std/macro.try.html
 [14]: https://hoverbear.org/2016/10/12/rust-state-machine-pattern/
+[15]: http://huonw.github.io/blog/2015/05/finding-closure-in-rust/
