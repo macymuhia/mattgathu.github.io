@@ -17,6 +17,7 @@ keywords: rust, posts, journal, 2018
 5. [Jan-19-2018 - Error Handling in Rust](#jan-19-2018)
 6. [Jan-20-2018 - Pretty State Machine Patterns in Rust](#jan-20-2018)
 7. [Jan-21-2018 - Finding Closure in Rust](#jan-21-2018)
+8. [Jan-22-2018 - Why is Rust difficult?](#jan-22-2018-1)
 
 ## Jan-15-2018
 
@@ -504,7 +505,37 @@ for f in &closures {
 }
 ```
 
+## Jan-22-2018-1
 
+**Title:** [Why is Rust difficult?][16]
+
+Rust is considered difficult to learn by many people. However, it's not necessarily a bad thing if
+you get something in return for the investment.
+
+Rust aims to **solve hard problems**; it's therefore harder than languages that solve simpler problems,
+such as Lua.
+
+> On the other hand, if you declare upfront that your language needs to be able to solve any hard 
+> problem anyone thinks of, run fast and be safe to use then you’ll probably get your wish, but 
+> it’ll hardly be simple.
+
+The Rust language is **honest**. It does not abstract away problems from the programmer; a beginner
+therefore has to grasp the complete complexity of the problem.
+
+Rust is **different**. Features such as ownership, traits and lifetimes makes Rust stand out from
+other languages.
+
+The compiler is very **strict**. The Rust compiler requires your code to be typed, memory safe and
+be free of data races. Even having dead code is an issue! 
+
+> But at the same time, it makes learning it a bit harder, because it insists on you learning
+> everything needed to write a good program. An average is not acceptable.
+
+There is also a general **perception** that Rust is hard. 
+
+Despite all this, it easy to quickly come up to speed, find the language interesting, become a
+better programmer (the compile is a strict teacher) and meet some very nice people in the
+community.
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -521,3 +552,4 @@ for f in &closures {
 [13]: https://doc.rust-lang.org/std/macro.try.html
 [14]: https://hoverbear.org/2016/10/12/rust-state-machine-pattern/
 [15]: http://huonw.github.io/blog/2015/05/finding-closure-in-rust/
+[16]: https://vorner.github.io/difficult.html
