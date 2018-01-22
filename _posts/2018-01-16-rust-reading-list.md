@@ -18,6 +18,7 @@ keywords: rust, posts, journal, 2018
 6. [Jan-20-2018 - Pretty State Machine Patterns in Rust](#jan-20-2018)
 7. [Jan-21-2018 - Finding Closure in Rust](#jan-21-2018)
 8. [Jan-22-2018 - Why is Rust difficult?](#jan-22-2018-1)
+9. [Jan-22-2018 - Macros](#jan-22-2018-2)
 
 ## Jan-15-2018
 
@@ -537,6 +538,50 @@ Despite all this, it easy to quickly come up to speed, find the language interes
 better programmer (the compile is a strict teacher) and meet some very nice people in the
 community.
 
+## Jan-22-2018-2
+
+**Title:** [Macros][17]
+
+Macros are a syntactic language feature. A macro use is expanded according to a macro definition.
+They are like functions, however, their expansions happens entirely at compile time. In Rust this
+after the parsing step of compilation.
+
+Rust has a hygienic macro system - it preserves the scoping of the macro definition preventing
+shadowing of variables during macro expansion.
+
+Macros can be implemented as simple textual substitution, by manipulating tokens after lexing, or
+by manipulating the AST (Abstract Syntax Tree) after parsing. This also depends on how macros are
+defined. `macro_rules` in Rust allow for pattern matching of arguments in the macro definition.
+Rust macros are lexed into tokens before expansion and parsed afterwards.
+
+In a **procedural macro system**, a macro is defined as a program. When its use is encountered, the
+macro is executed with the macro arguments as input. The macro use is then replaced by the result
+of the execution.
+
+```rust
+proc_macro! foo(x) {  
+    let mut result = String::new();
+    for i in 0..10 {
+        result.push_str(x)
+    }
+    result
+}
+
+fn main() {  
+    let a = "foo!(bar)"; // Hand-waving about string literals.
+}
+```
+will expand to
+```rust
+fn main() {  
+    let a = "barbarbarbarbarbarbarbarbarbar";
+}
+```
+> A procedural macro is a generalisation of the syntactic macros described so far. One could imagine 
+> implementing a syntactic macro as a procedural macro by returning the text of the syntactic macro 
+> after manually substituting the arguments.
+
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -553,3 +598,4 @@ community.
 [14]: https://hoverbear.org/2016/10/12/rust-state-machine-pattern/
 [15]: http://huonw.github.io/blog/2015/05/finding-closure-in-rust/
 [16]: https://vorner.github.io/difficult.html
+[17]: https://www.ncameron.org/blog/macros/
