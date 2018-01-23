@@ -19,6 +19,7 @@ keywords: rust, posts, journal, 2018
 7. [Jan-21-2018 - Finding Closure in Rust](#jan-21-2018)
 8. [Jan-22-2018 - Why is Rust difficult?](#jan-22-2018-1)
 9. [Jan-22-2018 - Macros](#jan-22-2018-2)
+10. [Jan-23-2018 - Macros in Rust pt1](#jan-23-2018)
 
 ## Jan-15-2018
 
@@ -582,6 +583,65 @@ fn main() {
 > after manually substituting the arguments.
 
 
+## Jan-23-2018
+
+**Title:** [Macros in Rust pt1][18]
+
+Rust offers an array of macro features:
+* `macro_rules!` macros
+* procedural macros
+* built-in macros such as `println!` and `#[derive()]`
+
+`macro_rules!` lets you write syntactic macros based on pattern matching. They are used in a
+function like style, the `!` distinguishes them from regular functions.
+
+```rust
+macro_rules! hello {  
+    () => { println!("hello world"); }
+}
+
+fn main() {  
+    hello!();
+}
+```
+The above gets expanded into:
+
+```rust
+fn main() {  
+    println!("hello world");
+}
+```
+
+To illustrate pattern matching in macros:
+
+This code snippet
+```rust
+
+macro_rules! my_print {  
+    (foo <> $e: expr) => { println!("FOOOOOOOOOOOOoooooooooooooooooooo!! {}", $e); };
+    ($e: expr) => { println!("{}", $e); };
+    ($i: ident, $e: expr) => {
+        let $i = {
+            let a = $e;
+            println!("{}", a);
+            a
+        };
+    };
+}
+
+fn main() {  
+    my_print!(x, 30 + 12);
+    my_print!("hello!");
+    my_print!(foo <> "hello!");
+}
+```
+Outputs
+```
+42
+hello!
+FOOOOOOOOOOOOoooooooooooooooooooo!! hello!
+```
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -599,3 +659,4 @@ fn main() {
 [15]: http://huonw.github.io/blog/2015/05/finding-closure-in-rust/
 [16]: https://vorner.github.io/difficult.html
 [17]: https://www.ncameron.org/blog/macros/
+[18]: https://www.ncameron.org/blog/macros-in-rust-pt1/
