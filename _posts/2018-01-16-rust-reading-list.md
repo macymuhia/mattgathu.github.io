@@ -20,6 +20,7 @@ keywords: rust, posts, journal, 2018
 8. [Jan-22-2018 - Why is Rust difficult?](#jan-22-2018-1)
 9. [Jan-22-2018 - Macros](#jan-22-2018-2)
 10. [Jan-23-2018 - Macros in Rust pt1](#jan-23-2018)
+11. [Jan-24-2018 - Macros in Rust pt2](#jan-24-2018)
 
 ## Jan-15-2018
 
