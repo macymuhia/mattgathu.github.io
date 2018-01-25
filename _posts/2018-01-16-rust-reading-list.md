@@ -21,6 +21,7 @@ keywords: rust, posts, journal, 2018
 9. [Jan-22-2018 - Macros](#jan-22-2018-2)
 10. [Jan-23-2018 - Macros in Rust pt1](#jan-23-2018)
 11. [Jan-24-2018 - Macros in Rust pt2](#jan-24-2018)
+12. [Jan-25-2018 - Macros in Rust pt3](#jan-25-2018)
 
 ## Jan-15-2018
 
@@ -708,6 +709,68 @@ fn impl_hello_world(ast: &syn::DeriveInput) -> quote::Tokens {
 
 This post also borrows from the [rusk book][22]
 
+## Jan-25-2018
+
+**Title:** [Macros in Rust pt3][23]
+
+This post is about **macro hygiene in Rust**
+
+A hygienic macro system preserves the scoping of a macro definition. The following examples
+illustrate that:
+
+```rust
+macro_rules! foo {  
+    () => {
+        let x = 0;
+    }
+}
+fn main() {  
+    let mut x = 42;
+    foo!();
+    println!("{}", x);
+}
+```
+The above code prints `42` as the output. Here the `x` defined in `main` and the one in `foo!` are
+disjoint.
+
+```rust
+macro_rules! foo {  
+    ($x: ident) => {
+        $x = 0;
+    }
+}
+fn main() {  
+    let mut x = 42;
+    foo!(x);
+    println!("{}", x);
+}
+```
+This prints `0`. `x` is passed in to the macro and then modified.
+
+Rust is hygienic with respect to variables scoping, labels, feature gates and stability checks.
+
+There are some limitations:
+* hygiene only works on expression variables and labels.
+* no hygiene is applied to lifetimes or type variables or types themselves.
+* no hygiene with respect to privacy and safety i.e. in `unsafe` blocks.
+
+The implementation of hygienic macro system is a bit complex.
+Much of the work happens during the **macro expansion** and **name resolution** phases of Rust
+code compilation.
+
+The macro expansion phase is hygienic. During name resolution syntactic names are resolved into
+definitions. For unhygienic system, this resolutions is basically string equality. In Rust
+however, we consider identifiers(names) and a syntax context. To check if two identifiers are
+equal, they are resolved in the respective syntax contexts and the results compared.
+The syntax context is added to an identifier during the macro expansion phase.
+
+The macro hygiene algorithm used in Rust comes from the [Macros That Work Together][24] paper. This
+mtwt algorithm is used during macro expansion. The whole syntax tree of a crate is walked,
+expanding macro uses and applying the algorithm to all identifiers.
+
+Mtwt has two key concepts - marking and renaming. Marking is applied when we expand a macro and
+renaming when we enter a new scope. A syntax context under mtwt consists of a series of marks and
+renames.
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -731,3 +794,5 @@ This post also borrows from the [rusk book][22]
 [20]: https://docs.rs/syn/0.12.10/syn/
 [21]: https://docs.rs/quote/0.4.2/quote/
 [22]: https://doc.rust-lang.org/book/first-edition/procedural-macros.html
+[23]: https://ncameron.org/blog/macros-in-rust-pt3/
+[24]: https://www.cs.utah.edu/plt/publications/jfp12-draft-fcdf.pdf
