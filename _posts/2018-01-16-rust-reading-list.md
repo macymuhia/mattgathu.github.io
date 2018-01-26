@@ -22,6 +22,7 @@ keywords: rust, posts, journal, 2018
 10. [Jan-23-2018 - Macros in Rust pt1](#jan-23-2018)
 11. [Jan-24-2018 - Macros in Rust pt2](#jan-24-2018)
 12. [Jan-25-2018 - Macros in Rust pt3](#jan-25-2018)
+13. [Jan-26-2018 - Macros in Rust pt4](#jan-26-2018)
 
 ## Jan-15-2018
 
@@ -338,7 +339,7 @@ When designing a state machine in Rust, we ideally want these characteristics:
 * We shouldn't need to resort to heap allocations to do this. 
 * The type system should be harnessed to our greatest ability.
 * As many errors as possible should be at compile-time.
- 
+
 An approach to achieve is use a combination of generics, `enum`s and shared values.
 
 ```rust
@@ -480,7 +481,7 @@ closure:
 * `Fn`: **by reference**
 * `FnMut`: **by mutable reference**
 * `FnOnce`: **by value**
- 
+
  By default, the compiler looks at the closure body to see how captured variables are used, and uses 
  that to infers how variables should be captured, that is deciding between `Fn`, `FnMut` and
  `FnOnce`.
@@ -772,6 +773,39 @@ Mtwt has two key concepts - marking and renaming. Marking is applied when we exp
 renaming when we enter a new scope. A syntax context under mtwt consists of a series of marks and
 renames.
 
+## Jan-26-2018
+
+**Title:** [Macros in Rust pt4][25]
+
+This post is about stuff around the import, export and modularisation of macros.
+
+The order of items matters for macros. You can only refer to a macro after it is declared.
+
+Macros defined inside a module cannot be used unless the module is annotated with `#[macro_use]`. Macros defined before and outside a module can be used without importation.
+
+Macros are encapsulated by crates - they must be explicitly imported and exported. When importing macros from a crate, you annotate `extern crate` with `#[macro_use]`.
+
+Program representations that matter in macros:
+* source text
+* token trees
+* abstract syntax tree
+
+**Source text** is the text passed to the compiler. It's stored in a codemap and is immutable. Once it's lexed, it hardly used by the compiler. It's main use is in error messages.
+
+**Lexing** is the first stage of compilation where source text is transformed into **tokens**.
+
+Parsing a token tree gives an **abstract syntax tree(AST)**. An AST is a tree of nodes representing the source text in a concrete way. 
+
+The three main phases of compilation are:
+* parsing and expansion
+* analysis, and
+* code generation
+
+**libsyntax** implements lexing, parsing and macro expansion. This is purely syntactic. The result of this is an AST. During lexing and parsing, macro use is left as is in the AST. The macro expansion phase walks the AST and performs substitutions while maintaining hygiene.
+
+**Spans** (_a span identifies a section of code in the source text_)  are used to tracing macros in order to highlight source code in error messages. Due to the possibility of nested macros, the are also **expansion traces** table that holds a trace of each macro expansion.
+
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -796,3 +830,4 @@ renames.
 [22]: https://doc.rust-lang.org/book/first-edition/procedural-macros.html
 [23]: https://ncameron.org/blog/macros-in-rust-pt3/
 [24]: https://www.cs.utah.edu/plt/publications/jfp12-draft-fcdf.pdf
+[25]: https://ncameron.org/blog/macros-in-rust-pt4/
