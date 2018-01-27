@@ -23,6 +23,7 @@ keywords: rust, posts, journal, 2018
 11. [Jan-24-2018 - Macros in Rust pt2](#jan-24-2018)
 12. [Jan-25-2018 - Macros in Rust pt3](#jan-25-2018)
 13. [Jan-26-2018 - Macros in Rust pt4](#jan-26-2018)
+14. [Jan-27-2018 - Virtual Structs Part 1 - Where Rust's enums shine](#jan-27-2018)
 
 ## Jan-15-2018
 
@@ -806,6 +807,44 @@ The three main phases of compilation are:
 **Spans** (_a span identifies a section of code in the source text_)  are used to tracing macros in order to highlight source code in error messages. Due to the possibility of nested macros, the are also **expansion traces** table that holds a trace of each macro expansion.
 
 
+
+## Jan-27-2018 
+
+**Title:** [Virtual Structs Part 1: Where Rust's enum shines][26]
+
+This post is about why **Rust enums are powerful.**
+
+Rust enums are more powerful compared to there equivalent in C++.
+The key difference between Rust and C++ is the size of the enum types. In Rust, the size of 
+an enum instance is equal to **the maximum of its variants**, which means that we can pass 
+enums around by value and know that we have enough space to store any variant of the enum. 
+In contrast, when using classes in C++, the size of an enum instance will vary, 
+**depending on what specific variance it is**. C++ requires passing around enums using a 
+pointer, since we don't know how much space is need upfront.
+
+This flexibility makes it easy to extend Rust's enums with ease.
+
+```rust 
+enum ErrorCode {
+    FileNotFound,
+    UnexpectedChar
+}
+```
+can be extended to
+
+```rust
+enum ErrorCode {
+    FileNotFound,
+    UnexpectedChar { expected: Vec<String>, found: char }
+}
+```
+In  C++ (or Java, Scala, etc) one would require some sort of class hierarchy (_more complex_) to achieve this.
+
+> **Rust really relies deeply on the flat, uniform layout for enums**. For example, every time you make 
+> a nullable pointer like `Option<&T>`, you are taking advantage of the fact that options are laid out 
+> flat in memory, whether they are `None` or `Some`. 
+
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -831,3 +870,4 @@ The three main phases of compilation are:
 [23]: https://ncameron.org/blog/macros-in-rust-pt3/
 [24]: https://www.cs.utah.edu/plt/publications/jfp12-draft-fcdf.pdf
 [25]: https://ncameron.org/blog/macros-in-rust-pt4/
+[26]: http://smallcultfollowing.com/babysteps/blog/2015/05/05/where-rusts-enum-shines/
