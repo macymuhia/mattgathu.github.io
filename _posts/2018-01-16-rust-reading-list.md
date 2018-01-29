@@ -25,6 +25,7 @@ keywords: rust, posts, journal, 2018
 13. [Jan-26-2018 - Macros in Rust pt4](#jan-26-2018)
 14. [Jan-27-2018 - Virtual Structs Part 1 - Where Rust's enums shine](#jan-27-2018)
 15. [Jan-28-2018 - Virtual Structs Part 2: Classes strike back](#jan-28-2018)
+16. [Jan-29-2018 - Virtual Structs Part 3: Bringing Enums and Structs Together](#jan-29-2018)
 
 ## Jan-15-2018
 
@@ -878,6 +879,66 @@ Rust currently lacks a way to "refine" the type of an enum to indicate the set o
 might be i.e. we can't make each variant its own type. Classes allow you to achieve this through
 inheritance.
 
+
+## Jan-29-2018
+
+**Title:** [Virtual Structs Part 3: Bringing Enums and Structs Together][28]
+
+This post is about a proposal of **bridging enums and structs in Rust.**
+
+Enums and structs can be generalized into a single concept i.e. an algebraic data type. Enums can
+be interpreted into a tree or hierarchy. This idea can be thought of as _type hierarchy._
+
+The `Option` enum:
+```rust
+enum Option<T> {
+    Some(T), None
+}
+```
+can be represented as:
+```
+enum Option<T>
+|
++- struct None<T>
++- struct Some<T>
+```
+
+Enum declarations can also be extended with the ability to have fields as well as variants:
+
+```rust
+enum TypeData<T> {
+    // Common fields:
+    id: u32,
+    flags: u32,
+    ...,
+
+    // Variants:
+    Int { },
+    Uint { },
+    ...
+}
+```
+
+Enums can also be made unsized, allowing each value to be sized to a particular variant.
+
+> One interesting question is whether we can concisely state conditions in which one would prefer to 
+> have “precise variant sizes” (class-like) vs “largest variant” (enum). 
+> I think the “precise sizes” approach is better when the following apply:
+> 
+> * A recursive type (like a tree), which tends to force boxing anyhow. Examples: the AST or types in the compiler, DOM in servo, a GUI.
+> * Instances never change what variant they are.
+> * Potentially wide variance in the sizes of the variants.
+
+It would also be great to use pattern matching as an elegant downcasting mechanism.
+
+Enums types can also be used as bounds - making them more capable and convenient.
+
+Enums could also have an associated struct type that can be used as a constructor allowing
+initialization of common fields.
+
+Finally enums could support subtyping and coercion - this is hard to get right.
+
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -905,3 +966,4 @@ inheritance.
 [25]: https://ncameron.org/blog/macros-in-rust-pt4/
 [26]: http://smallcultfollowing.com/babysteps/blog/2015/05/05/where-rusts-enum-shines/
 [27]: http://smallcultfollowing.com/babysteps/blog/2015/05/29/classes-strike-back/
+[28]: http://smallcultfollowing.com/babysteps/blog/2015/08/20/virtual-structs-part-3-bringing-enums-and-structs-together/
