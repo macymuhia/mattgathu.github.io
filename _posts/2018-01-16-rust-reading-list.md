@@ -24,6 +24,7 @@ keywords: rust, posts, journal, 2018
 12. [Jan-25-2018 - Macros in Rust pt3](#jan-25-2018)
 13. [Jan-26-2018 - Macros in Rust pt4](#jan-26-2018)
 14. [Jan-27-2018 - Virtual Structs Part 1 - Where Rust's enums shine](#jan-27-2018)
+15. [Jan-28-2018 - Virtual Structs Part 2: Classes strike back](#jan-28-2018)
 
 ## Jan-15-2018
 
@@ -844,6 +845,38 @@ In  C++ (or Java, Scala, etc) one would require some sort of class hierarchy (_m
 > a nullable pointer like `Option<&T>`, you are taking advantage of the fact that options are laid out 
 > flat in memory, whether they are `None` or `Some`. 
 
+## Jan-28-2018
+
+**Title:** [Virtual Structs Part 2: Classes strike back][27]
+
+This post is about the **shortcomings of enums** in Rust, vs a class based approach.
+
+* **Memory bloat**
+
+Enums have a size equal to their largest variant, this is sometimes a handicap. Avoid this memory
+bloat enum variants have to interned more so those with a lot of associated data. On the other hand
+a classes approach would allow exact memory size.
+
+* **Common fields**
+
+To have common fields across enums variants requires having a struct wrapper around the enum to
+provide the shared fields. This doesn't feel natural. An class-based approach would simply have a
+base class containing the common fields that is inherited by the variants.
+
+* **Initialization of common fields**
+
+If an enum has a lot of variants, being able to extract the common initialization code into a
+function is important.
+Since Rust lacks special constructors, there's no way to write a function that initializes only the
+common fields of the enum variants.
+C++ and Java use initialization based on constructors. This approach is problematic but it makes it
+helps abstract over the initialization of base class fields from subclass fields.
+
+* **Refinement types**
+
+Rust currently lacks a way to "refine" the type of an enum to indicate the set of variants that it
+might be i.e. we can't make each variant its own type. Classes allow you to achieve this through
+inheritance.
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -871,3 +904,4 @@ In  C++ (or Java, Scala, etc) one would require some sort of class hierarchy (_m
 [24]: https://www.cs.utah.edu/plt/publications/jfp12-draft-fcdf.pdf
 [25]: https://ncameron.org/blog/macros-in-rust-pt4/
 [26]: http://smallcultfollowing.com/babysteps/blog/2015/05/05/where-rusts-enum-shines/
+[27]: http://smallcultfollowing.com/babysteps/blog/2015/05/29/classes-strike-back/
