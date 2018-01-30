@@ -26,6 +26,7 @@ keywords: rust, posts, journal, 2018
 14. [Jan-27-2018 - Virtual Structs Part 1 - Where Rust's enums shine](#jan-27-2018)
 15. [Jan-28-2018 - Virtual Structs Part 2: Classes strike back](#jan-28-2018)
 16. [Jan-29-2018 - Virtual Structs Part 3: Bringing Enums and Structs Together](#jan-29-2018)
+17. [Jan-30-2018 - Taking Rust everywhere with rustup](#jan-30-2018)
 
 ## Jan-15-2018
 
@@ -938,6 +939,25 @@ initialization of common fields.
 
 Finally enums could support subtyping and coercion - this is hard to get right.
 
+## Jan-30-2018
+
+**Title:** [Taking Rust everywhere with rustup][29]
+
+**Cross-compilation** allows you to develop on one "host" platform, but get a final binary that
+runs on a different "target" platform. Rust aims to make this a no-brainer using rustup.
+
+> At its heart, rustup is a toolchain manager for Rust. It can download and switch between copies 
+> of the Rust compiler and standard library for all supported platforms, and track Rust’s nightly, 
+> beta, and release channels, as well as specific versions.
+
+rustup's handy commands:
+
+* **rustup install toolchain-name**: allows you to install multiple toolchains eg `beta`, `nightly`
+    and `stable`.
+* **rustup show**: shows the installed toolchains
+* **rustup update**: updates the toolchains to the latest versions.
+* **rustup default**: allows you to set the default toolchain
+* **rustup target**: allows you to add/remove a target to a toolchain
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -967,3 +987,4 @@ Finally enums could support subtyping and coercion - this is hard to get right.
 [26]: http://smallcultfollowing.com/babysteps/blog/2015/05/05/where-rusts-enum-shines/
 [27]: http://smallcultfollowing.com/babysteps/blog/2015/05/29/classes-strike-back/
 [28]: http://smallcultfollowing.com/babysteps/blog/2015/08/20/virtual-structs-part-3-bringing-enums-and-structs-together/
+[29]: https://blog.rust-lang.org/2016/05/13/rustup.html
