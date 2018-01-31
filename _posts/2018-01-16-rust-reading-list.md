@@ -27,6 +27,7 @@ keywords: rust, posts, journal, 2018
 15. [Jan-28-2018 - Virtual Structs Part 2: Classes strike back](#jan-28-2018)
 16. [Jan-29-2018 - Virtual Structs Part 3: Bringing Enums and Structs Together](#jan-29-2018)
 17. [Jan-30-2018 - Taking Rust everywhere with rustup](#jan-30-2018)
+18. [Jan-31-2018 - The Problem With Single-threaded Shared Mutability](#jan-31-2018)
 
 ## Jan-15-2018
 
@@ -959,6 +960,61 @@ rustup's handy commands:
 * **rustup default**: allows you to set the default toolchain
 * **rustup target**: allows you to add/remove a target to a toolchain
 
+## Jan-31-2018
+
+**Title:** [The Problem With Single-threaded Shared Mutability][30]
+
+This post is about Rust's choice to disallow having multiple mutable aliases to the same data.
+
+Rust uses a **Read-Write lock** pattern to prevent having multiple mutable aliases, the reasons for
+these are:
+
+- **Prevent memory unsafety**
+
+Rust enums can cause segfaults with the RWLock pattern.
+
+```rust
+enum StringOrInt {
+    Str(String),
+    Int(i64)
+}
+
+let x = Str("Hi!".to_string()); 
+let y = &mut x; 
+
+if let Str(ref insides) = x { 
+    *y = Int(1); 
+    println!("x says: {}", insides); 
+}
+```
+> Here, we invalidated the insides reference because setting x to Int(1) meant that there is no longer a 
+> string inside it. However, insides is still a reference to a String, and the generated assembly would try 
+> to dereference the memory location where the pointer to the allocated string was, and probably end up trying 
+> to dereference 1 or some nearby data instead, and cause a segfault.
+
+- **Prevent Iterator invalidation**
+
+```rust
+let buf = vec![1,2,3,4];
+
+for i in &buf {
+    buf.push(i);
+}
+```
+Iterator invalidation involves consuming iterators whilst modifying their underlying dataset.
+The code snippet above would loop infinitely due to this. Rust prevents this from happening.
+
+Apart from infinite looping, reference invalidation would occur once the vector overflows its
+capacity and is reallocated.
+
+- **Prevent data corruption/ race?**
+
+> Aliasing with mutability in a sufficiently complex, single-threaded program is effectively the 
+> same thing as accessing data shared across multiple threads without a lock
+
+The above reasons make it possible to write safe abstractions, even for generic code.
+
+
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
 [3]: https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html
@@ -988,3 +1044,4 @@ rustup's handy commands:
 [27]: http://smallcultfollowing.com/babysteps/blog/2015/05/29/classes-strike-back/
 [28]: http://smallcultfollowing.com/babysteps/blog/2015/08/20/virtual-structs-part-3-bringing-enums-and-structs-together/
 [29]: https://blog.rust-lang.org/2016/05/13/rustup.html
+[30]: https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/
