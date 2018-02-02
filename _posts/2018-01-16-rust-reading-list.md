@@ -28,6 +28,7 @@ keywords: rust, posts, journal, 2018
 16. [Jan-29-2018 - Virtual Structs Part 3: Bringing Enums and Structs Together](#jan-29-2018)
 17. [Jan-30-2018 - Taking Rust everywhere with rustup](#jan-30-2018)
 18. [Jan-31-2018 - The Problem With Single-threaded Shared Mutability](#jan-31-2018)
+19. [Feb-01-2018 - Rust Lifetimes for the Uninitialised](#feb-01-2018)
 
 ## Jan-15-2018
 
@@ -1014,6 +1015,100 @@ capacity and is reallocated.
 
 The above reasons make it possible to write safe abstractions, even for generic code.
 
+## Feb-01-2018
+
+**Title:** [Rust Lifetimes for the Uninitialised][31]
+
+This post is about [Lifetimes in Rust][32].
+
+Ownership dictates that every piece of data is exclusively owned by another part of the program. 
+Once ownership ends, the value is dropped. This gives us two points: introduction of the data into 
+the program (initialisation) and removal (dropping). The interesting thing in Rust is that those two 
+points are always clearly present. The range between those points is the region the binding and 
+it's associated value is _alive_, its _lifetime_.
+
+Rust provides has **lifetime elision** that makes lifetime annotations unnecessary for common
+use cases.
+
+> A common problem I see in trainings or the Hack & Learn is that presented with a lifetime problem, 
+> people start messing around with lifetime syntax. This is often the wrong approach. It is always 
+> the wrong approach if you don't fully understand what the compiler calls you out on. It has 
+> probably found an issue you haven't thought about, making a borrow invalid.
+
+Explicit lifetimes are needed everywhere where situations are unclear, such as in
+[`std::str.split`][33] that iteratively hands out references to subslices of a string. Since
+`split` does not copy strings, lifetime annotations are required to ensure that the strings are not
+dropped while the iterator still exists.
+
+> Remember the two golden rules:
+> 
+> - Don't fiddle with lifetime syntax until you understood what the compiler calls you out on
+> - Taking ownership (e.g. through cloning or using Box) isn't cheating
+
+## Feb-02-2018
+
+**Title:** [What Are Sum, Product, and Pi Types?][34]
+
+In its essence, a **sum type** is basically an _"or"_ type. In Rust, they are **enums**.
+
+```rust
+enum Foo {
+    Str(String),
+    Bool(bool)
+}
+
+let foo = Foo::Bool(true);
+
+// "pattern matching"
+match foo {
+    Str(s) => /* do something with string `s` */,
+    Bool(b) => /* do something with bool `b` */,
+}
+```
+The are called sum types because they are the _sum_ of the constituents types. In the above enum
+`Foo = String + bool`.
+
+**Product types** are usually contain every possible combinations of elements of their constituent
+types.
+
+```rust
+
+struct Foo {
+    x: bool,
+    y: u8,
+}
+```
+The set of possible values of `Foo` is `{(x,y): x is a member of bool, y is a member of u8}` i.e. a
+**cartesian product**, often represented as `Foo = bool * u8`.
+
+
+What is a **Pi type?**.
+
+> It’s essentially a form of dependent type. A dependent type is when your type can depend on a value. 
+
+```rust
+// (the proposed rust syntax)
+fn make_array<const x: u8>() -> Array<bool, x> {
+   // ... 
+}
+```
+
+`make_array` is a function which can accept any integer and return a different type in each case.
+
+> You can view it as a set of functions, where each function corresponds to a different integer input. 
+
+```rust
+struct make_array {
+    make_array_0: fn() -> Array<bool, 0>,
+    make_array_1: fn() -> Array<bool, 1>,
+    make_array_2: fn() -> Array<bool, 2>,
+    // ... 
+}
+```
+
+
+
+
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -1045,3 +1140,7 @@ The above reasons make it possible to write safe abstractions, even for generic 
 [28]: http://smallcultfollowing.com/babysteps/blog/2015/08/20/virtual-structs-part-3-bringing-enums-and-structs-together/
 [29]: https://blog.rust-lang.org/2016/05/13/rustup.html
 [30]: https://manishearth.github.io/blog/2015/05/17/the-problem-with-shared-mutability/
+[31]: http://asquera.de/blog/2018-01-29/rust-lifetimes-for-the-uninitialised/
+[32]: https://doc.rust-lang.org/book/second-edition/ch10-03-lifetime-syntax.html
+[33]: https://doc.rust-lang.org/beta/std/primitive.str.html#method.split
+[34]: https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/
