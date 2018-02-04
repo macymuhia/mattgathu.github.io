@@ -29,6 +29,8 @@ keywords: rust, posts, journal, 2018
 17. [Jan-30-2018 - Taking Rust everywhere with rustup](#jan-30-2018)
 18. [Jan-31-2018 - The Problem With Single-threaded Shared Mutability](#jan-31-2018)
 19. [Feb-01-2018 - Rust Lifetimes for the Uninitialised](#feb-01-2018)
+20. [Feb-02-2018 - What Are Sum, Product, and Pi Types?](#feb-02-2018)
+21. [Feb-03-2018 - Mentally Modelling Modules](#feb-03-2018)
 
 ## Jan-15-2018
 
@@ -1106,6 +1108,33 @@ struct make_array {
 }
 ```
 
+## Feb-03-2018
+
+**Title:** [Mentally Modelling Modules][35]
+
+The module and import system in Rust is sometimes confusing to deal with, this post explains one
+right way of modelling it.
+
+Two rules for resolving confusion on how **imports** work:
+
+* `use foo::bar::baz` resolves `foo` relative to the root module `lib.rs` or `main.rs`
+    - you can resolve relative to the current module by explicitly using `use self::foo::bar::baz`
+* `foo::bar::baz` within your code resolves `foo` relative to the current module.
+    - you can resolve relative to the root by explicitly using `::foo::bar::baz`
+
+How the **import system** works can be summed up as:
+* `extern crate` and `use` will act as if they were defining the imported item in the current module, like a symbolic link
+* `use foo::bar::baz` resolves the path relative to the root module
+* `foo::bar::baz` in an inline path (i.e. not in a `use`) will resolve relative to the current module
+* `::foo::bar::baz` will always resolve relative to the root module
+* `self::foo::bar::baz` will always resolve relative to the current module
+* `super::foo::bar::baz` will always resolve relative to the parent module
+
+Basic rules on **module privacy**:
+
+* If you can access a module, you can access all its public contents.
+* A module can access its child modules, but not recursively.
+* A child module can access its parent module (and it parents) and all their contents.
 
 
 
@@ -1144,3 +1173,4 @@ struct make_array {
 [32]: https://doc.rust-lang.org/book/second-edition/ch10-03-lifetime-syntax.html
 [33]: https://doc.rust-lang.org/beta/std/primitive.str.html#method.split
 [34]: https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/
+[35]: https://manishearth.github.io/blog/2017/05/14/mentally-modelling-modules/
