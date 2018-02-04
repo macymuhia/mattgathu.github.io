@@ -31,6 +31,7 @@ keywords: rust, posts, journal, 2018
 19. [Feb-01-2018 - Rust Lifetimes for the Uninitialised](#feb-01-2018)
 20. [Feb-02-2018 - What Are Sum, Product, and Pi Types?](#feb-02-2018)
 21. [Feb-03-2018 - Mentally Modelling Modules](#feb-03-2018)
+22. [Feb-04-2018 - Rust Tidbits: What Is a Lang Item?](#feb-04-2018)
 
 ## Jan-15-2018
 
@@ -1137,6 +1138,57 @@ Basic rules on **module privacy**:
 * A child module can access its parent module (and it parents) and all their contents.
 
 
+## Feb-04-2018 
+
+**Title:** [Rust Tidbits: What Is a Lang Item?][36]
+
+> **Lang items** are a way for the stdlib (and libcore) to define types, traits, functions and other
+> items which the complier needs to know about.
+
+> The `rustc` compiler has certain pluggable operations, that is, functionality that isn't hard-coded into the language, 
+> but is implemented in libraries, with a special marker to tell the compiler it exists. The marker is the attribute 
+> `#[lang = "..."]` and there are various different values of ..., i.e. various different 'lang items'. [docs link][37]
+
+For example the expression `x + y` is desugared into `Add::add(x, y)` where the `Add` trait is
+marked as a lang item using `#[lang = "add"]`. The compiler can then call it whenever it encounters
+the addition operator.
+
+```rust
+#[lang = "add"]
+#[stable(feature = "rust1", since = "1.0.0")]
+pub trait Add<RHS=Self> {
+    ...
+}
+```
+
+Lang items are usually only required when you do an operation which needs them. Most lang items
+are use in the standard library and thus will be available in your program, such as the `add` item.
+
+Skipping the standard library using `#![no_std]` will usually trigger
+compiler errors about required lang items.
+
+```rust
+#![no_std]
+fn main() {
+ let x = 1 + 3;
+}
+```
+errors out with:
+```
+error: language item required, but not found: `panic_fmt`
+error: language item required, but not found: `eh_personality`
+```
+
+> Basically, whenever the compiler needs to use special treatment with an item – whether it be 
+> dispatching calls to functions and trait methods in various situations, conferring special 
+> semantics to types/traits, or requiring traits to be implemented, the type will be defined 
+> in the standard library (libstd, libcore, or one of the crates behind the libstd façade), 
+> and marked as a lang item.
+
+
+
+
+
 
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
@@ -1174,3 +1226,5 @@ Basic rules on **module privacy**:
 [33]: https://doc.rust-lang.org/beta/std/primitive.str.html#method.split
 [34]: https://manishearth.github.io/blog/2017/03/04/what-are-sum-product-and-pi-types/
 [35]: https://manishearth.github.io/blog/2017/05/14/mentally-modelling-modules/
+[36]: https://manishearth.github.io/blog/2017/01/11/rust-tidbits-what-is-a-lang-item/
+[37]: https://doc.rust-lang.org/1.14.0/book/lang-items.html
