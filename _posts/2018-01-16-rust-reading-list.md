@@ -32,6 +32,7 @@ keywords: rust, posts, journal, 2018
 20. [Feb-02-2018 - What Are Sum, Product, and Pi Types?](#feb-02-2018)
 21. [Feb-03-2018 - Mentally Modelling Modules](#feb-03-2018)
 22. [Feb-04-2018 - Rust Tidbits: What Is a Lang Item?](#feb-04-2018)
+23. [Feb-15-2018 - Some notes on Send and Sync](#feb-15-2018)
 
 ## Jan-15-2018
 
@@ -1186,7 +1187,32 @@ error: language item required, but not found: `eh_personality`
 > and marked as a lang item.
 
 
+## Feb-15-2018
 
+**Title:** [Some notes on Send and Sync][38]
+
+There are two parts to Rust's support for concurrency:
+
+* ownership and lifetimes
+* the `Send` and `Sync` traits
+
+    > These traits capture and control the two most common ways a piece of data be accessed and 
+    > thrown around by threads, dictating whether it is safe to transfer ownership or pass a 
+    > reference into another thread.
+
+They are **marker traits** (_have no methods and inherently do not provide any functionality_) for
+certain invariants that types implementing them are expected to fulfill.
+
+These invariants are:
+* if type `T` is `Send`, passing it by value to another thread should be safe.
+* if type `T` is `Sync`, passing its reference `&T` to another thread should be safe.
+
+> These two traits enable a lot of useful concurrency and parallel patterns to be expressed while
+> guaranteeing memory safety.
+
+If a type `T` implements both `Sync` and `Copy`, then it can also implement `Send`.
+
+Transferring a `&mut T` between threads is guaranteed to be safe if `T` implements `Send`.
 
 
 
@@ -1228,3 +1254,4 @@ error: language item required, but not found: `eh_personality`
 [35]: https://manishearth.github.io/blog/2017/05/14/mentally-modelling-modules/
 [36]: https://manishearth.github.io/blog/2017/01/11/rust-tidbits-what-is-a-lang-item/
 [37]: https://doc.rust-lang.org/1.14.0/book/lang-items.html
+[38]: https://huonw.github.io/blog/2015/02/some-notes-on-send-and-sync/
