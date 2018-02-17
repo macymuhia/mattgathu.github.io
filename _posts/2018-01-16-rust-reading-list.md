@@ -33,6 +33,7 @@ keywords: rust, posts, journal, 2018
 21. [Feb-03-2018 - Mentally Modelling Modules](#feb-03-2018)
 22. [Feb-04-2018 - Rust Tidbits: What Is a Lang Item?](#feb-04-2018)
 23. [Feb-15-2018 - Some notes on Send and Sync](#feb-15-2018)
+24. [Feb-16-2018 - The Option Type](#feb-16-2018)
 
 ## Jan-15-2018
 
@@ -1214,7 +1215,46 @@ If a type `T` implements both `Sync` and `Copy`, then it can also implement `Sen
 
 Transferring a `&mut T` between threads is guaranteed to be safe if `T` implements `Send`.
 
+## Feb-16-2018
 
+**Title:** [The Option Type][39]
+
+> Optional types are basically compiler-enforced null-checks. If a method returns an Option, 
+> any caller of that method must deal with it in some way or the code won't compile. 
+> As a bonus, the Option type in the method's signature is a dead giveaway to developers 
+> that the method may return null.
+
+```rust
+fn get_shortest(names: Vec<&str>) -> Option<&str> {
+    if names.len() > 0 {
+        let mut shortest = names[0];
+        for name in names.iter() {
+            if name.len() < shortest.len() {
+                shortest = *name;
+            }
+        }
+        Some(shortest)
+    } else {
+        None
+    }
+}
+```
+The function above returns an `Option` which encloses either a String or None.
+To get the enclosed String from the Option, we use its `unwrap` method; this will however panic if
+None is received.
+
+A better way is to use a `match` statement for unwrapping:
+```rust
+fn do_calculation(names: Vec<&str>) -> f64 {
+    match get_shortest(names) {
+        Some(x) => x.len() as f64 * std::f64::consts::PI,
+        None    => // handle the null case here
+    }
+}
+```
+
+> ... optionals are a nice tool to have. They communicate that a null return is possible, 
+> and force developers to handle that possibility one way or another.
 
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
@@ -1255,3 +1295,4 @@ Transferring a `&mut T` between threads is guaranteed to be safe if `T` implemen
 [36]: https://manishearth.github.io/blog/2017/01/11/rust-tidbits-what-is-a-lang-item/
 [37]: https://doc.rust-lang.org/1.14.0/book/lang-items.html
 [38]: https://huonw.github.io/blog/2015/02/some-notes-on-send-and-sync/
+[39]: https://8thlight.com/blog/dave-torre/2015/03/11/the-option-type.html
