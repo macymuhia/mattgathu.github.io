@@ -34,6 +34,7 @@ keywords: rust, posts, journal, 2018
 22. [Feb-04-2018 - Rust Tidbits: What Is a Lang Item?](#feb-04-2018)
 23. [Feb-15-2018 - Some notes on Send and Sync](#feb-15-2018)
 24. [Feb-16-2018 - The Option Type](#feb-16-2018)
+25. [Feb-19-2018 - The Sized Trait](#feb-19-2018)
 
 ## Jan-15-2018
 
@@ -1256,6 +1257,33 @@ fn do_calculation(names: Vec<&str>) -> f64 {
 > ... optionals are a nice tool to have. They communicate that a null return is possible, 
 > and force developers to handle that possibility one way or another.
 
+## Feb-19-2018
+
+**Title:** [The Sized Trait][40]
+
+`Sized` is a marker trait that is automatically implemented. A type is considered sized if the
+precise size of a value of type is known and fixed at compile time once the real types of the type
+parameters are known i.e. after monomorphisation.
+
+For example `u8` is one byte and `Vec<T>` is 12 or 24 bytes (32 vs 64 bit platforms).
+
+Unsized types are known as dynamically sized types (DSTs) and include `Trait`s and slices `[T]`.
+A slice represents an unknown number of `T`s contiguous in memory. A `Trait` represents a value of
+any type that implements `Trait` and these have varying sizes.
+
+Unsized values must always be behind a pointer: `&[T]` or `Box<Trait>`. The pointer has the info
+required to compute the size.
+
+Sized types have more flexibility - compiler can manipulate them directly. Having an unsized type
+behind a pointer effectively makes it sized - size of the pointer.
+
+Since `Sized` is bound for type parameters by default, a special syntax `?Sized` is used to
+opt-out.
+
+> This unusual decision was chosen because of the increased flexibility of sized types, and some 
+> data (which I now can’t find in the issue tracker) which indicated that most type parameters 
+> needed to be sized.
+
 
 [1]: http://huonw.github.io/blog/2015/01/peeking-inside-trait-objects/
 [2]: http://huonw.github.io/blog/2014/07/what-does-rusts-unsafe-mean/
@@ -1296,3 +1324,4 @@ fn do_calculation(names: Vec<&str>) -> f64 {
 [37]: https://doc.rust-lang.org/1.14.0/book/lang-items.html
 [38]: https://huonw.github.io/blog/2015/02/some-notes-on-send-and-sync/
 [39]: https://8thlight.com/blog/dave-torre/2015/03/11/the-option-type.html
+[40]: http://huonw.github.io/blog/2015/01/the-sized-trait/
