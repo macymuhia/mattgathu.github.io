@@ -24,9 +24,11 @@ found this explanation that I'm quoting here for my future self.
 > if no exception is thrown. For a language with RAII, every single stack object with a destructor 
 > forms an implicit try block, so this is impractical in practice.
 >
+>
 > The performance overhead of zero-cost exceptions is not a theoretical issue. I remember stories 
 > of Eclipse taking 30 seconds to start up when compiled with GCJ (which used zero-cost exceptions) 
 > because it throws thousands of exceptions while starting.
+>
 >
 > The C approach to error handling has a great performance and code size story relative to exceptions 
 > when you consider both the error and success paths, which is why systems code overwhelmingly prefers it. 
